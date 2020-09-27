@@ -2,10 +2,11 @@
 
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const createToken = require('../helpers/createToken');
+const { createExaminerToken } = require('../helpers/createToken');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const router = new express.Router();
+const { authRequired, ensureCorrectUser } = require("../middleware/auth");
 
 const BCRYPT_WORK_FACTOR = 10;
 
@@ -42,10 +43,19 @@ router.post("/register", async function (req, res, next) {
                     organizations: {
                         connect: { handle: org_handle}
                     }
+                },
+                select : {
+                    username: true,
+                    organizations: {
+                        select :{
+                            name: true,
+                            handle: true,
+                            logo_url: true
+                        }
+                    }
                 }
             });
-            delete newExaminer.password;
-            const token = createToken(newExaminer, 'examiner');
+            const token = createExaminerToken(newExaminer);
             return res.status(201).json({ token });
         }
     } 

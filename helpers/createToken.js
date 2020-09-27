@@ -3,15 +3,19 @@ const { SECRET } = require("../config");
 
 /** return signed JWT from user data. */
 
-function createToken(user, role) {
+function createExaminerToken(user) {
   let payload = {
     username: user.username,
-    org_handle: user.org_handle,
-    role
+    org_handle: user.organizations.handle,
+    org_name: user.organizations.name,
+    org_logo: user.organizations.logo_url,
+    role: 'examiner'
   };
 
   return jwt.sign(payload, SECRET);
 }
 
 
-module.exports = createToken;
+module.exports = {
+  createExaminerToken
+};
