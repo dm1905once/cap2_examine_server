@@ -1,12 +1,15 @@
-/** Routes for Organizations. */
+/* Routes for:  /orgs   */
 
 const express = require("express");
 const router = new express.Router();
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 
 router.get("/", async function (req, res, next) {
     try {
-      return res.json({AllOrgs: [{name: "org1"}, {name: "org2"}]});
+      const allOrgs = await prisma.organizations.findMany();
+      res.json(allOrgs);
     }
     catch (err) {
       return next(err);
