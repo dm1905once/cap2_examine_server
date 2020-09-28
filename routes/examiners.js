@@ -64,4 +64,42 @@ router.post("/register", async function (req, res, next) {
     }
 });
 
+
+router.post("/login", async function (req, res, next) {
+    const { username, password } = req.body;
+    try {
+        const result = await prisma.examiners.findMany({ 
+            where: { username },
+            select : {
+                username: true,
+                password: true,
+                organizations: {
+                    select :{
+                        name: true,
+                        handle: true,
+                        logo_url: true
+                    }
+                }
+            }
+        });
+        const examiner = result[0];
+        if (examiner) {
+            const isValid = await bcrypt.compare(password, examiner.password);
+            if (isValid) {
+                const token = createExaminerToken(examiner);
+                return res.status(200).json({ token });
+            }
+        }
+
+        // Default action if examiner was not found or credentials were invalid
+        const invalidPass = new Error("Invalid Credentials");
+        invalidPass.status = 401;
+        throw invalidPass;
+
+    } 
+    catch (err) {
+        return next(err);
+    }
+});
+
   module.exports = router;
