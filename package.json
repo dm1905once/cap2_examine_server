@@ -12,6 +12,7 @@
   "dependencies": {
     "@prisma/cli": "^2.7.1",
     "@prisma/client": "^2.7.1",
+    "axios": "^0.20.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

@@ -9,10 +9,20 @@ const { Examiner } = require('../dbOps');
 
 const BCRYPT_WORK_FACTOR = 10;
 
-router.get("/", authRequired, async function (req, res, next) {
+router.get("/", async function (req, res, next) {
     try {
-        const allExaminers = Examiner.getAll();
+        const allExaminers = await Examiner.getAll();
         res.json(allExaminers);
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+
+router.get("/:username", authRequired, ensureCorrectUser, async function (req, res, next) {
+    try {
+        const examiner = await Examiner.getOne(req.params.username);
+        res.json(examiner);
     }
     catch (err) {
         return next(err);

@@ -8,6 +8,27 @@ class Examiner {
         return examiners;
     }
 
+    static async getOne(username){
+        const examiners = await prisma.examiners.findMany({
+            where: {username: username},
+            select : {
+                id: true,
+                username: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+                organizations: {
+                    select :{
+                        name: true,
+                        handle: true,
+                        logo_url: true
+                    }
+                }
+            }
+        });
+        return examiners[0];
+    }
+
     static async exists(username){
         const usernameCount = await prisma.examiners.count({
             where: {username: username}
