@@ -8,8 +8,7 @@ datasource db {
 }
 
 model examiners {
-  id            Int           @default(autoincrement()) @id
-  username      String
+  username      String        @id
   email         String?
   first_name    String
   last_name     String?
@@ -17,12 +16,41 @@ model examiners {
   org_handle    String
   photo_url     String?
   organizations organizations @relation(fields: [org_handle], references: [handle])
+  exams         exams[]
 }
 
 model organizations {
+  handle    String      @id
   key       String
   name      String
   logo_url  String?
-  handle    String      @id
   examiners examiners[]
+}
+
+model choices {
+  choice_id   String     @id
+  choice_text String
+  question_id String?
+  questions   questions? @relation(fields: [question_id], references: [question_id])
+}
+
+model exams {
+  exam_id       String      @id
+  exam_name     String
+  exam_owner    String
+  exam_fee      Float?      @default(0.00)
+  exam_pass_pct Int?        @default(70)
+  examiners     examiners   @relation(fields: [exam_owner], references: [username])
+  questions     questions[]
+}
+
+model questions {
+  question_id     String    @id
+  question_type   String
+  question_text   String
+  question_seq    Int
+  valid_answer_id String
+  exam_id         String?
+  exams           exams?    @relation(fields: [exam_id], references: [exam_id])
+  choices         choices[]
 }

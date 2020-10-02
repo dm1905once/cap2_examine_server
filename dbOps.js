@@ -9,10 +9,9 @@ class Examiner {
     }
 
     static async getOne(username){
-        const examiners = await prisma.examiners.findMany({
+        const examiner = await prisma.examiners.findOne({
             where: {username: username},
             select : {
-                id: true,
                 username: true,
                 first_name: true,
                 last_name: true,
@@ -26,7 +25,7 @@ class Examiner {
                 }
             }
         });
-        return examiners[0];
+        return examiner;
     }
 
     static async exists(username){
