@@ -52,7 +52,7 @@ router.post("/login", async function (req, res, next) {
     const { username, password } = req.body;
     try {
         const result = await Examiner.authenticate(username);
-        const examiner = result[0];
+        const examiner = result;
         if (examiner) {
             const isValid = await bcrypt.compare(password, examiner.password);
             if (isValid) {

@@ -64,7 +64,7 @@ class Examiner {
     }
 
     static async authenticate(username){
-        const result = await prisma.examiners.findMany({ 
+        const result = await prisma.examiners.findOne({ 
             where: { username },
             select : {
                 username: true,
