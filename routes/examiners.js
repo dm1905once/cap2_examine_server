@@ -6,6 +6,7 @@ const router = new express.Router();
 const { createExaminerToken } = require('../helpers/createToken');
 const { authRequired, ensureCorrectUser } = require("../middleware/auth");
 const Examiner = require('../db_ops/Examiner');
+const Exam = require('../db_ops/Exam');
 
 const BCRYPT_WORK_FACTOR = 10;
 
@@ -23,6 +24,17 @@ router.get("/:username", authRequired, ensureCorrectUser, async function (req, r
     try {
         const examiner = await Examiner.getOne(req.params.username);
         res.json(examiner);
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+
+
+router.post("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
+    try{
+        const newExam = await Exam.create(req.body.newExam);
+        return res.status(201).json(newExam);
     }
     catch (err) {
         return next(err);
