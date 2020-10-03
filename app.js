@@ -10,10 +10,12 @@ app.use(morgan("tiny"));
 // Routes
 const orgsRoutes = require("./routes/orgs");
 const examinersRoutes = require("./routes/examiners");
+const examsRoutes = require("./routes/exams");
 const applicantsRoutes = require("./routes/applicants");
 
 app.use("/orgs", orgsRoutes);
 app.use("/examiners", examinersRoutes);
+app.use("/exams", examsRoutes);
 app.use("/applicants", applicantsRoutes);
 
 
