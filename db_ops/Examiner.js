@@ -82,6 +82,4 @@ class Examiner {
     }
 }
 
-module.exports = {
-    Examiner
-  };
+module.exports = Examiner;

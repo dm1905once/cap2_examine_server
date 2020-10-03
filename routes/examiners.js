@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const router = new express.Router();
 const { createExaminerToken } = require('../helpers/createToken');
 const { authRequired, ensureCorrectUser } = require("../middleware/auth");
-const { Examiner } = require('../dbOps');
+const Examiner = require('../db_ops/Examiner');
 
 const BCRYPT_WORK_FACTOR = 10;
 
