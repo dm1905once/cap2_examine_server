@@ -13,8 +13,9 @@ class Exam {
             data: {
                 exam_id: exam.exam_id,
                 exam_name: exam.exam_name,
+                exam_description: exam.exam_description,
                 exam_fee: exam.exam_fee,
-                exam_pass_pct: exam.exam_pass_pct,
+                exam_pass_score: exam.exam_pass_score,
                 examiners: {
                     connect: { username: exam.exam_owner}
                 }

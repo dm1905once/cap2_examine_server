@@ -18,9 +18,10 @@ CREATE TABLE examiners (
 CREATE TABLE exams (
     exam_id text PRIMARY KEY,
     exam_name text NOT NULL,
+    exam_description text,
     exam_owner text NOT NULL REFERENCES examiners(username) ON UPDATE CASCADE ON DELETE SET NULL,
     exam_fee money DEFAULT 0.00,
-    exam_pass_pct integer DEFAULT 70
+    exam_pass_score integer DEFAULT 70
 );
 
 CREATE TABLE questions (
