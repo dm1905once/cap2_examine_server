@@ -8,6 +8,20 @@ class Exam {
         return exams;
     };
 
+    static async getUserExams(username){
+        const exams = await prisma.exams.findMany({
+            where: {exam_owner: username},
+        });
+        return exams;
+    };
+
+    static async deleteUserExam(username, exam_id){
+        const exam = await prisma.exams.delete({
+            where: {exam_id},
+        });
+        return exam;
+    };
+
     static async create(exam){
         const newExamId = await prisma.exams.create({
             data: {

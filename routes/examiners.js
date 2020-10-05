@@ -31,6 +31,17 @@ router.get("/:username", authRequired, ensureCorrectUser, async function (req, r
 });
 
 
+router.get("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
+    const username = req.params.username;
+    try{
+        const exams = await Exam.getUserExams(username);
+        return res.status(201).json(exams);
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+
 router.post("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
     try{
         const newExam = await Exam.create(req.body);
@@ -40,6 +51,20 @@ router.post("/:username/exams", authRequired, ensureCorrectUser, async function 
         return next(err);
     }
 });
+
+router.delete("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
+    const username = req.params.username;
+    const examId = req.body.exam_id;
+    try{
+        const examDeleted = await Exam.deleteUserExam(username, examId);
+        return res.status(204).end();
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+
+
 
 router.post("/register", async function (req, res, next) {
     const { username,  password } = req.body;
