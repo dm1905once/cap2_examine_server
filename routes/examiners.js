@@ -33,7 +33,7 @@ router.get("/:username", authRequired, ensureCorrectUser, async function (req, r
 
 router.post("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
     try{
-        const newExam = await Exam.create(req.body.newExam);
+        const newExam = await Exam.create(req.body);
         return res.status(201).json(newExam);
     }
     catch (err) {
