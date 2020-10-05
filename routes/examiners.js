@@ -35,7 +35,18 @@ router.get("/:username/exams", authRequired, ensureCorrectUser, async function (
     const username = req.params.username;
     try{
         const exams = await Exam.getUserExams(username);
-        return res.status(201).json(exams);
+        return res.status(200).json(exams);
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+
+router.get("/:username/exams/:examId", authRequired, ensureCorrectUser, async function (req, res, next) {
+    const { username, examId } = req.params;
+    try{
+        const exam = await Exam.getExamForEdit(username, examId);
+        return res.status(200).json(exam);
     }
     catch (err) {
         return next(err);

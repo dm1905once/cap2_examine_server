@@ -15,6 +15,20 @@ class Exam {
         return exams;
     };
 
+    static async getExamForEdit(username, examId){
+        const exam = await prisma.exams.findOne({
+            where: { exam_id: examId },
+            include: {
+                questions: {
+                    include: {
+                        choices: true
+                    }
+                }
+            }
+        });
+        return exam;
+    }
+
     static async deleteUserExam(username, exam_id){
         const exam = await prisma.exams.delete({
             where: {exam_id},
