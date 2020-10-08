@@ -10,6 +10,7 @@ const Exam = require('../db_ops/Exam');
 
 const BCRYPT_WORK_FACTOR = 10;
 
+// GET all examiners (this is not used just yet)
 router.get("/", async function (req, res, next) {
     try {
         const allExaminers = await Examiner.getAll();
@@ -19,6 +20,7 @@ router.get("/", async function (req, res, next) {
         return next(err);
     }
 });
+
 
 router.get("/:username", authRequired, ensureCorrectUser, async function (req, res, next) {
     try {
@@ -30,7 +32,7 @@ router.get("/:username", authRequired, ensureCorrectUser, async function (req, r
     }
 });
 
-
+// GET all exams for an examiner
 router.get("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
     const username = req.params.username;
     try{
@@ -42,6 +44,7 @@ router.get("/:username/exams", authRequired, ensureCorrectUser, async function (
     }
 });
 
+// GET one exam so it can be editted
 router.get("/:username/exams/:examId", authRequired, ensureCorrectUser, async function (req, res, next) {
     const { username, examId } = req.params;
     try{
@@ -53,6 +56,7 @@ router.get("/:username/exams/:examId", authRequired, ensureCorrectUser, async fu
     }
 });
 
+// POST a new exam
 router.post("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
     try{
         const newExam = await Exam.create(req.body);
@@ -63,6 +67,26 @@ router.post("/:username/exams", authRequired, ensureCorrectUser, async function 
     }
 });
 
+
+// PATCH update an existing exam
+router.patch("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
+    try{
+        // const updatedExam = await Exam.updateQuestions(req.body.editExam.questions[0]);
+        // return res.status(200).json(updatedExam);
+        const { exam_owner, exam_id } = req.body.editExam;
+        const oldExamDeleted = await Exam.deleteUserExam(exam_owner, exam_id);
+        if (oldExamDeleted) {
+            const replacementExam = await Exam.create(req.body.editExam);
+            return res.status(201).json(replacementExam);
+        };
+        
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+
+// DELETE an exam
 router.delete("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
     const username = req.params.username;
     const examId = req.body.exam_id;
@@ -76,7 +100,7 @@ router.delete("/:username/exams", authRequired, ensureCorrectUser, async functio
 });
 
 
-
+// POST register a new examiner
 router.post("/register", async function (req, res, next) {
     const { username,  password } = req.body;
     try{
@@ -95,7 +119,7 @@ router.post("/register", async function (req, res, next) {
     }
 });
 
-
+// POST login a new examiner
 router.post("/login", async function (req, res, next) {
     const { username, password } = req.body;
     try {

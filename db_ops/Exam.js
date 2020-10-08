@@ -1,5 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+    log: ['query', 'info', 'warn'],
+});
 
 class Exam {
 
@@ -59,12 +61,12 @@ class Exam {
                         question_type: question.question_type,
                         question_text: question.question_text,
                         question_seq: question.question_seq,
-                        valid_answer_id: question.valid_answer,
+                        valid_answer_id: question.valid_answer_id,
                         exams: {
                             connect: { exam_id: newExamId.exam_id}
                         },
                         choices: {
-                            create: [...question.options]
+                            create: [...question.choices]
                         }
                     },
                     select: { question_id: true}
@@ -72,8 +74,24 @@ class Exam {
             });
         } 
         return newExamId;
-    }
+    };
 
+    // static async updateQuestions(question){
+    //     // const choiceCount = await prisma.$queryRaw`SELECT count(*) FROM choices WHERE question_id = ${question.question_id};`
+    //     const deletedChoices = await prisma.$queryRaw`DELETE FROM choices WHERE question_id = ${question.question_id};`
+        
+    //     const updated = await prisma.questions.update({
+    //         where: { question_id: question.question_id },
+    //         data: { 
+    //             valid_answer_id: question.valid_answer_id,
+    //             choices: {
+    //                 create: question.choices,
+    //                 connect: 
+    //             }
+    //         }
+    //     });
+    //     return updated;
+    // };
 }
 
 module.exports = Exam;
