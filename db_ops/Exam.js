@@ -16,7 +16,7 @@ class Exam {
         });
         return exams;
     };
-
+/*
     static async getExamForEdit(username, examId){
         const exam = await prisma.exams.findOne({
             where: { exam_id: examId },
@@ -24,6 +24,25 @@ class Exam {
                 questions: {
                     include: {
                         choices: true
+                    }
+                }
+            }
+        });
+        return exam;
+    }
+*/
+    static async getExamForEdit(username, examId){
+        const exam = await prisma.exams.findOne({
+            where: { exam_id: examId },
+            include: {
+                questions: {
+                    include: {
+                        choices: {
+                            select: {
+                                choice_id: true,
+                                choice_text: true
+                            }
+                        }
                     }
                 }
             }

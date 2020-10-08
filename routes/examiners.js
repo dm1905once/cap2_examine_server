@@ -71,12 +71,10 @@ router.post("/:username/exams", authRequired, ensureCorrectUser, async function 
 // PATCH update an existing exam
 router.patch("/:username/exams", authRequired, ensureCorrectUser, async function (req, res, next) {
     try{
-        // const updatedExam = await Exam.updateQuestions(req.body.editExam.questions[0]);
-        // return res.status(200).json(updatedExam);
-        const { exam_owner, exam_id } = req.body.editExam;
+        const { exam_owner, exam_id } = req.body;
         const oldExamDeleted = await Exam.deleteUserExam(exam_owner, exam_id);
         if (oldExamDeleted) {
-            const replacementExam = await Exam.create(req.body.editExam);
+            const replacementExam = await Exam.create(req.body);
             return res.status(201).json(replacementExam);
         };
         
