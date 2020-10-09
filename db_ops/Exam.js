@@ -95,22 +95,26 @@ class Exam {
         return newExamId;
     };
 
-    // static async updateQuestions(question){
-    //     // const choiceCount = await prisma.$queryRaw`SELECT count(*) FROM choices WHERE question_id = ${question.question_id};`
-    //     const deletedChoices = await prisma.$queryRaw`DELETE FROM choices WHERE question_id = ${question.question_id};`
-        
-    //     const updated = await prisma.questions.update({
-    //         where: { question_id: question.question_id },
-    //         data: { 
-    //             valid_answer_id: question.valid_answer_id,
-    //             choices: {
-    //                 create: question.choices,
-    //                 connect: 
-    //             }
-    //         }
-    //     });
-    //     return updated;
-    // };
+
+    static async getApplicableExams(){
+        const exams = await prisma.exams.findMany({
+            include: {
+                examiners: {
+                    select: {
+                        photo_url: true,
+                        organizations: {
+                            select: {
+                                name: true,
+                                logo_url: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        return exams;
+    };
+
 }
 
 module.exports = Exam;
