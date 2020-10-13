@@ -54,6 +54,7 @@ CREATE TABLE applications (
     applicantion_id text PRIMARY KEY,
     applicant_email text NOT NULL,
     exam_id text NOT NULL,
+    status text NOT NULL,
     questions_total integer,
     questions_correct integer,
     questions_wrong integer,

@@ -66,6 +66,7 @@ model applications {
   applicantion_id      String @id
   applicant_email      String
   exam_id              String
+  status               String
   questions_total      Int?
   questions_correct    Int?
   questions_wrong      Int?

@@ -38,6 +38,23 @@ class Applicant {
         });
         return result;
     }
+
+    static async buyExam(email){
+        const result = await prisma.applicants.findOne({ 
+            data: {
+                applicantion_id,
+                applicant_email,
+                exam_id,
+                status: "purchased"
+            },
+            select : {
+                email: true,
+                password: true,
+                full_name: true
+            }
+        });
+        return result;
+    }
 }
 
 module.exports = Applicant;
