@@ -15,7 +15,17 @@ function createExaminerToken(user) {
   return jwt.sign(payload, SECRET);
 }
 
+function createApplicantToken(user) {
+  let payload = {
+    email: user.email,
+    role: 'applicant'
+  };
+
+  return jwt.sign(payload, SECRET);
+}
+
 
 module.exports = {
-  createExaminerToken
+  createExaminerToken,
+  createApplicantToken
 };

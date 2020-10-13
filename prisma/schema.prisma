@@ -55,3 +55,20 @@ model questions {
   exams           exams?    @relation(fields: [exam_id], references: [exam_id])
   choices         choices[]
 }
+
+model applicants {
+  email     String @id
+  full_name String
+  password  String
+}
+
+model applications {
+  applicantion_id      String @id
+  applicant_email      String
+  exam_id              String
+  questions_total      Int?
+  questions_correct    Int?
+  questions_wrong      Int?
+  questions_unanswered Int?
+  eval_pct             Float?
+}

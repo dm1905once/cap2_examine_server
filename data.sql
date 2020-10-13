@@ -1,3 +1,8 @@
+DROP DATABASE IF EXISTS examine_test;
+CREATE DATABASE examine_test;
+
+\c examine_test;
+
 CREATE TABLE organizations (
     handle text PRIMARY KEY,
     key text NOT NULL,
@@ -39,7 +44,24 @@ CREATE TABLE choices (
     question_id text REFERENCES public.questions(question_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+CREATE TABLE applicants (
+    email text PRIMARY KEY,
+    full_name text NOT NULL,
+    password text NOT NULL
+);
+
+CREATE TABLE applications (
+    applicantion_id text PRIMARY KEY,
+    applicant_email text NOT NULL,
+    exam_id text NOT NULL,
+    questions_total integer,
+    questions_correct integer,
+    questions_wrong integer,
+    questions_unanswered integer,
+    eval_pct decimal(5,2)
+);
 
 
-INSERT INTO organizations (handle, key, name, logo_url)
-VALUES ('ORG1', 'org1', 'SOME STATE UNIVERSITY', 'https://placeimg.com/640/480/business');
+
+INSERT INTO organizations (handle, key, name, logo_url) VALUES 
+('ORG1', 'org1', 'SOME STATE UNIVERSITY', 'sangga-rima-roman-selia-lSwbzenbmIw-unsplash.jpg');
