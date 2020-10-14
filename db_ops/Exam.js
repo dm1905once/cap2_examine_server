@@ -36,6 +36,13 @@ class Exam {
         return exam;
     }
 
+    static async getExamForPurchase(exam_id){
+        const exam = await prisma.exams.findOne({
+            where: { exam_id }
+        });
+        return exam;
+    }
+
     static async deleteUserExam(username, exam_id){
         const exam = await prisma.exams.delete({
             where: {exam_id},

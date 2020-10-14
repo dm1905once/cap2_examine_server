@@ -7,6 +7,8 @@ const { createApplicantToken } = require('../helpers/createToken');
 const { authRequired, ensureCorrectUser } = require("../middleware/auth");
 const Applicant = require('../db_ops/Applicant');
 const Exam = require('../db_ops/Exam');
+const { STRIPE_SECRET } = require('../config');
+const stripe = require('stripe')(STRIPE_SECRET);
 
 const BCRYPT_WORK_FACTOR = 10;
 
@@ -55,6 +57,39 @@ router.post("/acquireExam", async function (req, res, next) {
   }
 });
 
+router.post('/stripe/create-session', async (req, res, next) => {
+  const { exam_id, exam_name, org_logo } = req.body;
+
+  try{
+    const examDetails = await Exam.getExamForPurchase(exam_id);
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: exam_name,
+              images: [org_logo],
+            },
+            unit_amount: parseInt(examDetails.exam_fee),
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: 'http://localhost:3000/applicants?success=true',
+      cancel_url: 'http://localhost:3000/applicants?canceled=true',
+    });
+
+    return res.json({ id: session.id });
+
+  }catch (err) {
+    return next(err);
+  }
+});
+
 
 // POST register a new applicant
 router.post("/register", async function (req, res, next) {
@@ -77,7 +112,6 @@ router.post("/register", async function (req, res, next) {
 
 // POST login a new applicant
 router.post("/login", async function (req, res, next) {
-  console.log("entre a route");
   const { email, password } = req.body;
   try {
       const result = await Applicant.authenticate(email);
