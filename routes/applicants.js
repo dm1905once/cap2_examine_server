@@ -22,9 +22,9 @@ router.get("/exams", async function (req, res, next) {
 });
 
 // GET list of PURCHASED exams
-router.get("/purchased", async function (req, res, next) {
+router.get("/:applicantEmail/purchased", async function (req, res, next) {
   try {
-    const purchased = await Applicant.getPurchasedExams(req.query.applicantEmail);
+    const purchased = await Applicant.getPurchasedExams(req.params.applicantEmail);
     res.json(purchased);
   }
   catch (err) {
@@ -34,7 +34,7 @@ router.get("/purchased", async function (req, res, next) {
 
 // POST acquireExam - register a new application
 router.post("/acquireExam", async function (req, res, next) {
-  const { _token, ...applicationDetails} = req.body;
+  const { ...applicationDetails} = req.body;
   try{
         const newApplication = await Applicant.acquireExam(applicationDetails);
         return res.status(201).json({ newApplication });

@@ -40,10 +40,17 @@ class Applicant {
     }
 
     static async acquireExam(applicationDetails){
+        const { application_id, applicant_email, exam_id } = applicationDetails;
         const result = await prisma.applications.create({ 
             data: {
-                ...applicationDetails,
-                status: "purchased"
+                application_id,
+                status: "purchased",
+                applicants : {
+                    connect: { email: applicant_email }
+                },
+                exams : {
+                    connect: { exam_id }
+                }
             },
             select : {
                 status: true
