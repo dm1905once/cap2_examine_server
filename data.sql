@@ -51,9 +51,9 @@ CREATE TABLE applicants (
 );
 
 CREATE TABLE applications (
-    applicantion_id text PRIMARY KEY,
-    applicant_email text NOT NULL,
-    exam_id text NOT NULL,
+    application_id text PRIMARY KEY,
+    applicant_email text REFERENCES applicants(email) ON UPDATE CASCADE ON DELETE RESTRICT,
+    exam_id text REFERENCES exams(exam_id) ON UPDATE CASCADE ON DELETE RESTRICT,
     status text NOT NULL,
     questions_total integer,
     questions_correct integer,

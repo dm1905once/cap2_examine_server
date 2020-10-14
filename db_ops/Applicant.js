@@ -39,18 +39,50 @@ class Applicant {
         return result;
     }
 
-    static async buyExam(email){
-        const result = await prisma.applicants.findOne({ 
+    static async acquireExam(applicationDetails){
+        const result = await prisma.applications.create({ 
             data: {
-                applicantion_id,
-                applicant_email,
-                exam_id,
+                ...applicationDetails,
                 status: "purchased"
             },
             select : {
-                email: true,
-                password: true,
-                full_name: true
+                status: true
+            }
+        });
+        return result;
+    }
+
+    static async getPurchasedExams(applicant_email){
+        const result = await prisma.applications.findMany({ 
+            where: { 
+                applicant_email,
+                status: 'purchased' 
+            },
+            include : {
+                exams: {
+                    select : {
+                        exam_name: true,
+                        exam_pass_score: true
+                    }
+                }
+            }
+        });
+        return result;
+    }
+
+    static async getCompletedExams(applicant_email){
+        const result = await prisma.applications.findMany({ 
+            where: { 
+                applicant_email,
+                status: 'completed' 
+            },
+            include : {
+                exams: {
+                    select : {
+                        exam_name: true,
+                        exam_pass_score: true
+                    }
+                }
             }
         });
         return result;

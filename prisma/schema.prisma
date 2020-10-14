@@ -35,13 +35,14 @@ model choices {
 }
 
 model exams {
-  exam_id          String      @id
+  exam_id          String         @id
   exam_name        String
   exam_description String?
   exam_owner       String
-  exam_fee         Float?      @default(0.00)
-  exam_pass_score  Int?        @default(70)
-  examiners        examiners   @relation(fields: [exam_owner], references: [username])
+  exam_fee         Float?         @default(0.00)
+  exam_pass_score  Int?           @default(70)
+  examiners        examiners      @relation(fields: [exam_owner], references: [username])
+  applications     applications[]
   questions        questions[]
 }
 
@@ -57,19 +58,22 @@ model questions {
 }
 
 model applicants {
-  email     String @id
-  full_name String
-  password  String
+  email        String         @id
+  full_name    String
+  password     String
+  applications applications[]
 }
 
 model applications {
-  applicantion_id      String @id
-  applicant_email      String
-  exam_id              String
+  application_id       String      @id
+  applicant_email      String?
+  exam_id              String?
   status               String
   questions_total      Int?
   questions_correct    Int?
   questions_wrong      Int?
   questions_unanswered Int?
   eval_pct             Float?
+  applicants           applicants? @relation(fields: [applicant_email], references: [email])
+  exams                exams?      @relation(fields: [exam_id], references: [exam_id])
 }

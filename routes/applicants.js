@@ -21,6 +21,29 @@ router.get("/exams", async function (req, res, next) {
   }
 });
 
+// GET list of PURCHASED exams
+router.get("/purchased", async function (req, res, next) {
+  try {
+    const purchased = await Applicant.getPurchasedExams(req.query.applicantEmail);
+    res.json(purchased);
+  }
+  catch (err) {
+      return next(err);
+  }
+});
+
+// POST acquireExam - register a new application
+router.post("/acquireExam", async function (req, res, next) {
+  const { _token, ...applicationDetails} = req.body;
+  try{
+        const newApplication = await Applicant.acquireExam(applicationDetails);
+        return res.status(201).json({ newApplication });
+  } 
+  catch (err) {
+      return next(err);
+  }
+});
+
 
 // POST register a new applicant
 router.post("/register", async function (req, res, next) {
