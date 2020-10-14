@@ -7,7 +7,7 @@ const { createApplicantToken } = require('../helpers/createToken');
 const { authRequired, ensureCorrectUser } = require("../middleware/auth");
 const Applicant = require('../db_ops/Applicant');
 const Exam = require('../db_ops/Exam');
-const { STRIPE_SECRET } = require('../config');
+const { CLIENT_REDIRECT_URL, STRIPE_SECRET } = require('../config');
 const stripe = require('stripe')(STRIPE_SECRET);
 
 const BCRYPT_WORK_FACTOR = 10;
@@ -58,7 +58,7 @@ router.post("/acquireExam", async function (req, res, next) {
 });
 
 router.post('/stripe/create-session', async (req, res, next) => {
-  const { exam_id, exam_name, org_logo } = req.body;
+  const { exam_id, application_id, applicant_email, org_logo } = req.body;
 
   try{
     const examDetails = await Exam.getExamForPurchase(exam_id);
@@ -70,7 +70,7 @@ router.post('/stripe/create-session', async (req, res, next) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: exam_name,
+              name: examDetails.exam_name,
               images: [org_logo],
             },
             unit_amount: parseInt(examDetails.exam_fee),
@@ -79,8 +79,8 @@ router.post('/stripe/create-session', async (req, res, next) => {
         },
       ],
       mode: 'payment',
-      success_url: 'http://localhost:3000/applicants?success=true',
-      cancel_url: 'http://localhost:3000/applicants?canceled=true',
+      success_url: `${CLIENT_REDIRECT_URL}/applicants?success=true&application_id=${application_id}&exam_id=${exam_id}&applicant_email=${applicant_email}`,
+      cancel_url: `${CLIENT_REDIRECT_URL}/applicants?canceled=true`,
     });
 
     return res.json({ id: session.id });
