@@ -32,6 +32,17 @@ router.get("/:applicantEmail/purchased", async function (req, res, next) {
   }
 });
 
+// GET list of COMPLETED exams
+router.get("/:applicantEmail/completed", async function (req, res, next) {
+  try {
+    const completed = await Applicant.getCompletedExams(req.params.applicantEmail);
+    res.json(completed);
+  }
+  catch (err) {
+      return next(err);
+  }
+});
+
 // POST acquireExam - register a new application
 router.post("/acquireExam", async function (req, res, next) {
   const { ...applicationDetails} = req.body;
