@@ -57,6 +57,28 @@ router.post("/acquireExam", async function (req, res, next) {
   }
 });
 
+// GET validateApplication - validate that requested exam is valid
+router.get("/validateApplication", async function (req, res, next) {
+  const { application_id, applicant_email } = req.query;
+  try {
+    const validExamId = await Exam.preValidateExam(application_id, applicant_email);
+    return res.json({ validExamId });
+  } catch (err) {
+    return next(err);
+}
+})
+
+// GET applyExam - retrieve exam to be applied
+router.get("/applyExam", async function (req, res, next) {
+  const { exam_id } = req.query;
+  try {
+    const exam = await Exam.getExamForApplying(exam_id);
+    return res.json({ exam });
+  } catch (err) {
+    return next(err);
+}
+})
+
 router.post('/stripe/create-session', async (req, res, next) => {
   const { exam_id, application_id, applicant_email, org_logo } = req.body;
 

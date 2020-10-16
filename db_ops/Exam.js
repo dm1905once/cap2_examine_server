@@ -43,6 +43,29 @@ class Exam {
         return exam;
     }
 
+    static async getExamForApplying(exam_id){
+        const exam = await prisma.exams.findOne({
+            where: { exam_id },
+            select: {
+                exam_id: true,
+                exam_name: true,
+                questions: {
+                    select : {
+                        question_id: true,
+                        question_text: true,
+                        choices: {
+                            select: {
+                                choice_id: true,
+                                choice_text: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        return exam;
+    }
+
     static async deleteUserExam(username, exam_id){
         const exam = await prisma.exams.delete({
             where: {exam_id},
@@ -107,6 +130,22 @@ class Exam {
         });
         return exams;
     };
+
+    static async preValidateExam(application_id, applicant_email){
+        const exam = await prisma.applications.findOne({
+            where: { application_id },
+            select: {
+                applicant_email: true,
+                exam_id: true
+            }
+        });
+
+        if (exam.applicant_email === applicant_email) {
+            return exam.exam_id;
+        } else  {
+            return null
+        };
+    }
 
 }
 
