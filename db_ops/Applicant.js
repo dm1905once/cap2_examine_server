@@ -59,6 +59,24 @@ class Applicant {
         return result;
     }
 
+    static async updateExamResults(examResults){
+        const { application_id, questions_total, questions_correct, questions_unanswered, eval_pct } = examResults;
+        const result = await prisma.applications.update({ 
+            where: { application_id },
+            data: {
+                status: 'completed',
+                questions_total,
+                questions_correct,
+                questions_unanswered,
+                eval_pct
+            },
+            select : {
+                eval_pct: true
+            }
+        });
+        return result;
+    }
+
     static async getPurchasedExams(applicant_email){
         const result = await prisma.applications.findMany({ 
             where: { 

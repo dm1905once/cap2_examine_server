@@ -82,19 +82,47 @@ router.get("/applyExam", async function (req, res, next) {
 
 // POST submitExam - applicant submits an active exam
 router.post("/submitExam", async function (req, res, next) {
-  const { exam_id, responses: applicantResponses } = req.body;
+  const { exam_id, responses: applicantResponses, application_id } = req.body;
   try{
       const validResponses = await Exam.getExamForEvaluation(exam_id);
-        // const examScore = await Applicant.submitExam(examResponses);
-        // return res.status(201).json({ examScore });
-        let goodAnswers=0;
-        applicantResponses.forEach(appResponse =>{
-          if (validResponses.questions.find(valResponse =>{
-            return valResponse['valid_answer_id'] === appResponse['selected_choice_id']})){
-              goodAnswers++;
-          }
-        });
-        const score = (Math.round(goodAnswers/validResponses.questions.length * 100)).toFixed(2);
+  /* 
+    'applicantResponses' looks like this:
+    [
+      { question_id: 'Q_kgi7so3w', selected_choice_id: 'kgi7pdtq' },
+      { question_id: 'Q_kgi7ukob', selected_choice_id: 'kgi7tjr2' },
+      { question_id: 'Q_kgi7w5bp', selected_choice_id: 'kgi7w296' }
+    ]
+
+    'validResponses' looks like this:
+    {
+      exam_name: 'Second exam',
+      questions: [
+        { question_id: 'Q_kgi7so3w', valid_answer_id: 'kgi7pdtq' },
+        { question_id: 'Q_kgi7ukob', valid_answer_id: 'kgi7tpt3' },
+        { question_id: 'Q_kgi7w5bp', valid_answer_id: 'kgi7w296' }
+      ]
+    }
+  */  
+      let goodAnswers=0;
+      applicantResponses.forEach(appResponse =>{
+        if (validResponses.questions.find(valResponse =>{
+          return valResponse['valid_answer_id'] === appResponse['selected_choice_id']})){
+            goodAnswers++;
+        }
+      });
+      const score = (Math.round(goodAnswers/validResponses.questions.length * 100)).toFixed(2);
+
+      const examResults = {
+        application_id,
+        questions_total: validResponses.questions.length, 
+        questions_correct: goodAnswers,
+        questions_unanswered: validResponses.questions.length - applicantResponses.length,
+        eval_pct: parseInt(score)
+      }
+
+      const examReturn = await Applicant.updateExamResults(examResults);
+      return res.status(201).json({ examReturn });
+
   } catch (err) {
       return next(err);
   }
