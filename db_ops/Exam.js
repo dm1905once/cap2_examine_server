@@ -66,6 +66,22 @@ class Exam {
         return exam;
     }
 
+    static async getExamForEvaluation(exam_id){
+        const exam = await prisma.exams.findOne({
+            where: { exam_id },
+            select: {
+                exam_name: true,
+                questions: {
+                    select : {
+                        question_id: true,
+                        valid_answer_id: true
+                    }
+                }
+            }
+        });
+        return exam;
+    }
+
     static async deleteUserExam(username, exam_id){
         const exam = await prisma.exams.delete({
             where: {exam_id},

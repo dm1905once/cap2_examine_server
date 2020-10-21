@@ -77,8 +77,32 @@ router.get("/applyExam", async function (req, res, next) {
   } catch (err) {
     return next(err);
 }
-})
+});
 
+
+// POST submitExam - applicant submits an active exam
+router.post("/submitExam", async function (req, res, next) {
+  const { exam_id, responses: applicantResponses } = req.body;
+  try{
+      const validResponses = await Exam.getExamForEvaluation(exam_id);
+        // const examScore = await Applicant.submitExam(examResponses);
+        // return res.status(201).json({ examScore });
+        let goodAnswers=0;
+        applicantResponses.forEach(appResponse =>{
+          if (validResponses.questions.find(valResponse =>{
+            return valResponse['valid_answer_id'] === appResponse['selected_choice_id']})){
+              goodAnswers++;
+          }
+        });
+        const score = (Math.round(goodAnswers/validResponses.questions.length * 100)).toFixed(2);
+  } catch (err) {
+      return next(err);
+  }
+});
+
+
+
+// POST (Stripe) create-session 
 router.post('/stripe/create-session', async (req, res, next) => {
   const { exam_id, application_id, applicant_email, org_logo } = req.body;
 
