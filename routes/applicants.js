@@ -147,7 +147,7 @@ router.post('/stripe/create-session', async (req, res, next) => {
               name: examDetails.exam_name,
               images: [org_logo],
             },
-            unit_amount: parseInt(examDetails.exam_fee),
+            unit_amount: parseInt(examDetails.exam_fee)*100,
           },
           quantity: 1,
         },
