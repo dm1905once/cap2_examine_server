@@ -26,7 +26,8 @@ CREATE TABLE exams (
     exam_description text,
     exam_owner text NOT NULL REFERENCES examiners(username) ON UPDATE CASCADE ON DELETE SET NULL,
     exam_fee money DEFAULT 0.00,
-    exam_pass_score integer DEFAULT 70
+    exam_pass_score integer DEFAULT 70,
+    exam_status text DEFAULT 'enabled'
 );
 
 CREATE TABLE questions (

@@ -12,7 +12,10 @@ class Exam {
 
     static async getUserExams(username){
         const exams = await prisma.exams.findMany({
-            where: {exam_owner: username},
+            where: {
+                exam_owner: username,
+                exam_status: 'enabled'
+            },
         });
         return exams;
     };
@@ -83,8 +86,9 @@ class Exam {
     }
 
     static async deleteUserExam(username, exam_id){
-        const exam = await prisma.exams.delete({
-            where: {exam_id},
+        const exam = await prisma.exams.update({
+            where: { exam_id },
+            data: { exam_status: 'deleted' }
         });
         return exam;
     };
@@ -97,6 +101,7 @@ class Exam {
                 exam_description: exam.exam_description,
                 exam_fee: exam.exam_fee,
                 exam_pass_score: exam.exam_pass_score,
+                exam_status: 'enabled',
                 examiners: {
                     connect: { username: exam.exam_owner}
                 }
@@ -130,6 +135,9 @@ class Exam {
 
     static async getApplicableExams(){
         const exams = await prisma.exams.findMany({
+            where: {
+                exam_status: 'enabled'
+            },
             include: {
                 examiners: {
                     select: {

@@ -41,6 +41,7 @@ model exams {
   exam_owner       String
   exam_fee         Float?         @default(0.00)
   exam_pass_score  Int?           @default(70)
+  exam_status      String?        @default("enabled")
   examiners        examiners      @relation(fields: [exam_owner], references: [username])
   applications     applications[]
   questions        questions[]
