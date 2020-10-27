@@ -7,8 +7,7 @@ const { createApplicantToken } = require('../helpers/createToken');
 const { authRequired, ensureCorrectUser } = require("../middleware/auth");
 const Applicant = require('../db_ops/Applicant');
 const Exam = require('../db_ops/Exam');
-const { CLIENT_REDIRECT_URL, STRIPE_SECRET } = require('../config');
-const stripe = require('stripe')(STRIPE_SECRET);
+const { createStripeSession } = require('../apis/stripe');
 
 const BCRYPT_WORK_FACTOR = 10;
 
@@ -136,29 +135,9 @@ router.post('/stripe/create-session', async (req, res, next) => {
 
   try{
     const examDetails = await Exam.getExamForPurchase(exam_id);
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: examDetails.exam_name,
-              images: [org_logo],
-            },
-            unit_amount: parseInt(examDetails.exam_fee)*100,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${CLIENT_REDIRECT_URL}/applicants?success=true&application_id=${application_id}&exam_id=${exam_id}&applicant_email=${applicant_email}`,
-      cancel_url: `${CLIENT_REDIRECT_URL}/applicants?canceled=true`,
-    });
-
-    return res.json({ id: session.id });
-
+    const sessionId = await createStripeSession(examDetails, exam_id, application_id, applicant_email, org_logo);
+    console.log("This is the sesion ID I get: ", sessionId);
+    return res.json(sessionId);
   }catch (err) {
     return next(err);
   }
