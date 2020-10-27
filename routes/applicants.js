@@ -136,8 +136,8 @@ router.post('/stripe/create-session', async (req, res, next) => {
   try{
     const examDetails = await Exam.getExamForPurchase(exam_id);
     const sessionId = await createStripeSession(examDetails, exam_id, application_id, applicant_email, org_logo);
-    console.log("This is the sesion ID I get: ", sessionId);
     return res.json(sessionId);
+    
   }catch (err) {
     return next(err);
   }
