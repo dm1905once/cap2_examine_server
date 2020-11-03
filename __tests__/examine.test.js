@@ -23,7 +23,7 @@ beforeAll(async function(){
 
 afterAll(async function(){
 
-    // Examiner cleanup
+    // Examiner cleanup functions
     const deleteTestExam = async ()=>{
         await prisma.exams.delete({ where: { "exam_id": "E_kh26test" } });
     };
@@ -32,13 +32,20 @@ afterAll(async function(){
         await prisma.examiners.delete({ where: { "username": "unitTest" } });
     };
 
-    deleteTestExam().then(deleteTestExaminer);
+    // Applicant cleanup functions
+    const deleteTestApplication = async ()=>{
+        await prisma.applications.delete({ where: { "application_id": "A_pq10test" } });
+    };
 
-    // Applicant cleanup
     const deleteTestApplicant = async ()=>{
         await prisma.applicants.delete({ where: { "email": "testApplicant@nada.com" } });
     };
-    deleteTestApplicant();
+
+
+    deleteTestApplication()
+    .then(deleteTestApplicant)
+    .then(deleteTestExam)
+    .then(deleteTestExaminer);
 });
 
 
@@ -234,5 +241,39 @@ describe("Applicant Tests", function() {
         expect(response.statusCode).toEqual(200);
         expect(response.body.length).toEqual(0);
     });
+
+
+    test("Buy an exam", async function(){
+        const response = await request(app)
+        .post("/applicants/acquireExam")
+        .send(
+            {
+                application_id: 'A_pq10test',
+                exam_id: 'E_kh26test',
+                applicant_email: 'testApplicant@nada.com'
+            }
+        );
+        expect(response.statusCode).toEqual(201);
+        expect(response.body.newApplication.status).toEqual('purchased');
+    });
+
+    test("Take an exam", async function(){
+        const response = await request(app)
+        .post("/applicants/submitExam")
+        .send(
+            {
+                application_id: 'A_pq10test',
+                exam_id: 'E_kh26test',
+                responses:
+                    [
+                        { question_id: 'Q_kh26dfjt', selected_choice_id: 'kh26a9v1' },
+                        { question_id: 'Q_kh26dzmy', selected_choice_id: 'kh26dqaz' }
+                    ]
+            }
+        );
+        expect(response.statusCode).toEqual(201);
+        expect(response.body.examReturn.eval_pct).toEqual(50);
+    });
+
 
 });
