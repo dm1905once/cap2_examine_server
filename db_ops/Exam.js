@@ -86,6 +86,13 @@ class Exam {
     }
 
     static async deleteUserExam(username, exam_id){
+        const exam = await prisma.exams.delete({
+            where: { exam_id }
+        });
+        return exam;
+    };
+
+    static async markDeletedUserExam(username, exam_id){
         const exam = await prisma.exams.update({
             where: { exam_id },
             data: { exam_status: 'deleted' }

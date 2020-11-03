@@ -89,7 +89,7 @@ router.delete("/:username/exams", authRequired, ensureCorrectUser, async functio
     const username = req.params.username;
     const examId = req.body.exam_id;
     try{
-        const examDeleted = await Exam.deleteUserExam(username, examId);
+        const examDeleted = await Exam.markDeletedUserExam(username, examId);
         return res.status(204).end();
     }
     catch (err) {
