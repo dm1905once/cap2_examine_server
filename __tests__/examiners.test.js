@@ -2,6 +2,7 @@ const request = require("supertest");
 const app = require("../app");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+let testToken;
 
 beforeAll(async function(){
     const org1Exists = await prisma.organizations.count({where: {handle: 'ORG1'}});
@@ -22,23 +23,31 @@ beforeAll(async function(){
 
 afterAll(async function(){
 
+    // Examiner cleanup
     const deleteTestExam = async ()=>{
         await prisma.exams.delete({ where: { "exam_id": "E_kh26test" } });
-    }
+    };
     
     const deleteTestExaminer = async ()=>{
         await prisma.examiners.delete({ where: { "username": "unitTest" } });
-    }
+    };
 
     deleteTestExam().then(deleteTestExaminer);
+
+    // Applicant cleanup
+    const deleteTestApplicant = async ()=>{
+        await prisma.applicants.delete({ where: { "email": "testApplicant@nada.com" } });
+    };
+    deleteTestApplicant();
 });
 
 
 
-describe("Examiner Tests", function() {
-    let token;
 
-    test("Create a new examiner", async function(){
+// TESTS - Section 1: Examiners (Organization)
+describe("Examiner Tests", function() {
+
+    test("Create new examiner", async function(){
         const response = await request(app)
         .post("/examiners/register")
         .send(
@@ -53,7 +62,7 @@ describe("Examiner Tests", function() {
             }
         );
         expect(response.statusCode).toEqual(201);
-        token = response.body.token;
+        testToken = response.body.token;
     });
 
     test("Create a new exam", async function(){
@@ -103,7 +112,7 @@ describe("Examiner Tests", function() {
                       valid_answer_id: 'kh26dxf8'
                     }
                   ],
-                _token: token
+                _token: testToken
               }
         );
         expect(response.statusCode).toEqual(201);
@@ -111,7 +120,7 @@ describe("Examiner Tests", function() {
     });
 
 
-    test("Update an existing exam", async function(){
+    test("Update existing exam", async function(){
         const response = await request(app)
         .patch("/examiners/unitTest/exams")
         .send(
@@ -158,7 +167,7 @@ describe("Examiner Tests", function() {
                       valid_answer_id: 'kh26dqaz'
                     }
                   ],
-                _token: token
+                _token: testToken
             }
         );
         expect(response.statusCode).toEqual(201);
@@ -172,11 +181,58 @@ describe("Examiner Tests", function() {
         .send(
             {
                 exam_id: 'E_kh26test',
-                _token: token
+                _token: testToken
             }
         );
         expect(response.statusCode).toEqual(204);
     });
 
+
+});
+
+
+// TESTS - Section 2: Applicants
+describe("Applicant Tests", function() {
+    let applicantCount;
+
+    beforeAll(async function(){
+        applicantCount = await prisma.exams.count({
+            where: {exam_status : 'enabled'}
+        });
+    });
+
+    test("Get all available exams", async function(){
+        const response = await request(app)
+        .get("/applicants/exams");
+        expect(response.statusCode).toEqual(200);
+        expect(response.body.length).toEqual(parseInt(applicantCount));
+    });
+
+    test("Create new applicant", async function(){
+        const response = await request(app)
+        .post("/applicants/register")
+        .send(
+            {
+                email: 'testApplicant@nada.com',
+                full_name: 'test Applicant',
+                password: 'qwer'
+            }
+        );
+        expect(response.statusCode).toEqual(201);
+    });
+
+    test("Check purchased exams count", async function(){
+        const response = await request(app)
+        .get("/applicants/testApplicant@nada.com/purchased");
+        expect(response.statusCode).toEqual(200);
+        expect(response.body.length).toEqual(0);
+    });
+
+    test("Check completed exams count", async function(){
+        const response = await request(app)
+        .get("/applicants/testApplicant@nada.com/completed");
+        expect(response.statusCode).toEqual(200);
+        expect(response.body.length).toEqual(0);
+    });
 
 });
