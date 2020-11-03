@@ -30,7 +30,7 @@ afterAll(async function(){
         await prisma.examiners.delete({ where: { "username": "unitTest" } });
     }
 
-    // deleteTestExam().then(deleteTestExaminer);
+    deleteTestExam().then(deleteTestExaminer);
 });
 
 
@@ -159,10 +159,23 @@ describe("Examiner Tests", function() {
                     }
                   ],
                 _token: token
-              }
+            }
         );
         expect(response.statusCode).toEqual(201);
         expect(response.body.exam_id).toEqual('E_kh26test');
+    });
+
+
+    test("(Soft) delete an exam", async function(){
+        const response = await request(app)
+        .delete("/examiners/unitTest/exams")
+        .send(
+            {
+                exam_id: 'E_kh26test',
+                _token: token
+            }
+        );
+        expect(response.statusCode).toEqual(204);
     });
 
 
