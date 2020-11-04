@@ -1,7 +1,10 @@
 {
   "name": "examine_server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Examine app",
+  "engines": {
+    "node": "12.16.3"
+  },
   "main": "index.js",
   "scripts": {
     "test": "jest"
